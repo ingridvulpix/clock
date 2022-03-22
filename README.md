@@ -11,3 +11,5 @@
     <li>A informação no relógio de quais fusos estão sendo analisados</li>
   </ul>
 </ol>
+
+Obs: Documentação e comentários de acordo com o solicitado na matéria
