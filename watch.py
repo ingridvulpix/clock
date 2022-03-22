@@ -9,7 +9,6 @@ import pytz
 import time
 
 
-
 WIDTH           = 300
 HEIGHT          = 300
 FONT_SIZE       = 10
