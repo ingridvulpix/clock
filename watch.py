@@ -1,8 +1,5 @@
-from ctypes import resize
 from datetime import datetime
-from textwrap import fill
 import tkinter as tk
-from turtle import home 
 from PIL import ImageTk, Image
 import math
 import pytz
@@ -18,7 +15,8 @@ IMG_SIZE            = (WIDTH,HEIGHT)
 ARROW_MIN_SIZE      = IMG_SIZE[1] - IMG_SIZE[1]*0.6
 ARROW_HOUR_SIZE     = IMG_SIZE[1] - IMG_SIZE[1]*0.8
 
-home_town = 'America/Noronha'
+home_town = 'America/Bahia'
+local_tz = 'America/Toronto'
 
 image = Image.open("white_clock.jpg")
 end_prog = False
@@ -30,21 +28,23 @@ class Clock:
     acording to self timezone
     """
 
-    def __init__(self,region='US/Pacific',pos=[0,0],x=0,y=0):
+    def __init__(self,region=home_town,work_region = local_tz,pos=[0,0],x=0,y=0):
         self.grid = []
         self.region = region
+        self.work_region = work_region
         self.line_sec_id=0
         self.line_min_id=0
         self.line_hour_id=0
+        self.line_local_hour_id=0
         self.x = x
         self.y = y
         self.pos = list(pos)
 
-    def add_clock(self,region,indx):
+    def add_clock(self,region,local_region,indx):
         pos = [0,0]
         pos[0] = self.x+IMG_SIZE[0]*indx
         pos[1] = self.y
-        clk = Clock(region,pos)
+        clk = Clock(region,local_region,pos)
         self.grid.append(clk)
 
     def draw_clocks(self,canvas):
@@ -58,15 +58,6 @@ class Clock:
                 clk.draw_hours(canvas)
             clk.draw_seconds(canvas)
 
-    def __str__(self):
-        return "Region: "+ self.region
-
-    def my_time(self):
-        return      self.region+": "\
-                    +str(self.hours())\
-                    +":"\
-                    +str(self.minutes())
-
     def seconds(self):
         """Returns the minutes from the current time zone"""
         return datetime.now(pytz.timezone(self.region)).second
@@ -76,8 +67,12 @@ class Clock:
         return datetime.now(pytz.timezone(self.region)).minute
 
     def hours(self):
-        """Returns the hours from the current time zone"""
+        """Returns the hours from home time zone"""
         return datetime.now(pytz.timezone(self.region)).hour
+
+    def hour_local(self):
+        """Returns the hours from the current time zone"""
+        return datetime.now(pytz.timezone(self.work_region)).hour
 
 
     def draw_seconds(self,canvas):
@@ -127,6 +122,24 @@ class Clock:
             self.line_hour_id = canvas.create_line(x0,y0,x1,y1, arrow=tk.LAST,arrowshape=(20,10,2))
             canvas.pack()
 
+    def draw_localh(self,canvas):
+        """ draw the hours arrows from local region"""
+        if canvas:
+            canvas.delete(self.line_local_hour_id)
+            #get hours arrow angle
+            m = self.minutes()
+            h_local = self.hour_local()
+
+            #add minutes factor influance on the hour angle
+            angle = -math.pi/2 + 2*math.pi*(h_local%12)/12 + 2*math.pi*m/12/60
+            x0 = self.pos[0]+IMG_SIZE[0]//2
+            y0 = self.pos[1]+IMG_SIZE[1]//2
+            x1 = x0 +ARROW_HOUR_SIZE*math.cos(angle)
+            y1 = y0 +ARROW_HOUR_SIZE*math.sin(angle)
+            #draw hours arow
+            self.line_local_hour_id = canvas.create_line(x0,y0,x1,y1, arrow=tk.LAST,arrowshape=(15,10,2), fill = 'red')
+            canvas.pack()
+
     def digital_time_str(self):
         """ returns hours & minutesstring hh:mm """
 
@@ -147,8 +160,10 @@ class Clock:
         self.draw_minutes(canvas)
         self.draw_hours(canvas)
         self.draw_seconds(canvas)
+        self.draw_localh(canvas)
         m = self.minutes()
         h = self.hours()
+        h_local = self.hour_local()
 
         x0 = self.pos[0]+IMG_SIZE[0]//2
         y0 = self.pos[1]+IMG_SIZE[1]//2
@@ -176,7 +191,7 @@ def main():
 
     try :
         clk_display = Clock()
-        clk_display.add_clock('US/Pacific',0)
+        clk_display.add_clock(home_town,local_tz,0)
         top = tk.Tk()
         top.title("AD1- Ingrid de Almeida")
         canvas = tk.Canvas(top, bg="silver", height=HEIGHT, width=WIDTH)
