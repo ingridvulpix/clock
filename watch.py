@@ -176,13 +176,7 @@ class Clock:
         canvas.pack()
 
 
-def print_timezones():
-    """Print all the available identifiers for timezones"""
-    #pip install pitz
-    for tz in pytz.all_timezones:
-        print (tz)
-
-#def click_hl():
+def quit():
     global end_prog
     end_prog = True
     quit()
