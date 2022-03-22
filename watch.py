@@ -8,7 +8,7 @@ import time
 
 WIDTH           = 300
 HEIGHT          = 300
-FONT_SIZE       = 10
+FONT_SIZE       = 7
 
 #clock image is a square covering the width
 IMG_SIZE            = (WIDTH,HEIGHT)
@@ -167,6 +167,9 @@ class Clock:
 
         x0 = self.pos[0]+IMG_SIZE[0]//2
         y0 = self.pos[1]+IMG_SIZE[1]//2
+
+        canvas.create_text(x0,y0-30,fill="Black",font="Calibri " + str(FONT_SIZE+1)+" italic bold",text=self.region)
+        canvas.create_text(x0,y0-20,fill="Red",font="Calibri " + str(FONT_SIZE)+" italic bold",text=self.work_region)
 
         digtime = self.digital_time_str()
         canvas.create_text(x0,y0+20,fill="Black",font="Calibri 20 italic bold",text=digtime)
