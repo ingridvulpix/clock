@@ -54,6 +54,7 @@ class Clock:
     # Adds a clock in the center of the canvas
     #
     def add_clock(self):
+        """Adds a clock in the center of the canvas"""
         pos = [0,0]
         pos[0] = self.x
         pos[1] = self.y
@@ -63,12 +64,14 @@ class Clock:
     # Draws a clock in canvas
     #
     def draw_clocks(self,canvas):
+        """Draws a clock in canvas"""
         for clk in self.grid:
             clk.draw_me(canvas)
 
     # Updates clock with time passage
     #
     def update_clock(self,canvas):
+        """Updates clock with time passage"""
         for clk in self.grid:
             if not (clk.seconds()%60):
                 clk.draw_minutes(canvas)
@@ -100,8 +103,10 @@ class Clock:
         return datetime.now(pytz.timezone(self.work_region)).hour
 
     # Draw the seconds hand in shape of arrow
+    # @ param canvas 
     #
     def draw_seconds(self,canvas):
+        """Draw the seconds hand"""
         if canvas:
             canvas.delete(self.line_sec_id)
             x0 = self.pos[0]+IMG_SIZE[0]//2
@@ -114,15 +119,16 @@ class Clock:
             canvas.pack()
 
     # Draw the minutes hand in shape of arrow
+    # @ param canvas 
     #
     def draw_minutes(self,canvas):
-        """ draw the minutes arrows"""
+        """ Draw the minutes arrows"""
         if canvas:
             canvas.delete(self.line_min_id)
             #get minutes arrow angle
             m = self.minutes()
             #-pi/2 is 12 oclock angle
-            angle = -math.pi/2 + 2*math.pi*m/60
+            angle = -math.pi/2 + 2*math.pi*m/120
             x0 = self.pos[0]+IMG_SIZE[0]//2
             y0 = self.pos[1]+IMG_SIZE[1]//2
             x1 = x0 +ARROW_MIN_SIZE*math.cos(angle)
@@ -132,9 +138,10 @@ class Clock:
             canvas.pack()
 
     # Draw the home hour hand in shape of arrow
+    # @ param canvas 
     #
     def draw_hours(self,canvas):
-        """ draw the hours arrows"""
+        """ Draw the hours arrows"""
         if canvas:
             canvas.delete(self.line_hour_id)
             #get hours arrow angle
@@ -152,9 +159,10 @@ class Clock:
             canvas.pack()
 
     # Draw the (local) hour hand in shape of arrow
+    # @ param canvas 
     #
     def draw_localh(self,canvas):
-        """ draw the hours arrows from local region"""
+        """ Draw the hours arrows from local region"""
         if canvas:
             canvas.delete(self.line_local_hour_id)
             #get hours arrow angle
@@ -171,26 +179,12 @@ class Clock:
             self.line_local_hour_id = canvas.create_line(x0,y0,x1,y1, arrow=tk.LAST,arrowshape=(15,10,2), fill = 'red')
             canvas.pack()
 
-    # Returns a string with de time for the digital clock
-    #
-    def digital_time_str(self):
-        """ returns hours & minutesstring hh:mm """
-
-        m = self.minutes()
-        h = self.hours()
-        m_str = str(m)
-        h_str = str(h)
-        if m < 10:
-            m_str = "0" + str(m)
-        if h < 10:
-            h_str = "0" + str(h)
-
-        return h_str + ":" + m_str
-
     # Draw the components (clock, sticks, timezone, digital clock)
     # in canvas
+    # @ param canvas 
     #
     def draw_me(self,canvas):
+        """Draw the components (clock, sticks, timezone, digital clock) in canvas"""
         canvas.create_image(self.pos[0], self.pos[1], image=photo, anchor='nw')
 
         self.draw_minutes(canvas)
@@ -207,13 +201,12 @@ class Clock:
         canvas.create_text(x0,y0-20,fill="Black",font="Calibri " + str(FONT_SIZE+1)+" italic bold",text=self.region)
         canvas.create_text(x0,y0-10,fill="Red",font="Calibri " + str(FONT_SIZE)+" italic bold",text=self.work_region)
 
-        digtime = self.digital_time_str()
-        canvas.create_text(x0,y0+20,fill="Black",font="Calibri 20 italic bold",text=digtime)
         canvas.pack()
 
 # Stops the program
 #
 def quit():
+    """Stop the program engine"""
     global end_prog
     end_prog = True
     quit()
@@ -222,6 +215,7 @@ def quit():
 # Main function
 #
 def main():
+    """Main Function"""
     global image,photo,end_prog
 
     try :
